@@ -125,7 +125,7 @@ func configureFirewall() error {
 }
 
 func waitForContainers(ip string) {
-  done := make(chan bool)
+  engineUp := make(chan bool)
   go func(){
     for {
       resp, err := http.Get("http://"+ip)
@@ -133,27 +133,48 @@ func waitForContainers(ip string) {
         continue
       }
       if resp.StatusCode == http.StatusOK {
-        done <- true
+        engineUp <- true
+        return
       }
-      time.Sleep(100 * time.Millisecond)
+      time.Sleep(2 * time.Second)
+    }
+  }()
+  fuelerUp := make(chan bool)
+  go func() {
+    for {
+      resp, err := http.Get("http://"+ip+":8888")
+      if err != nil {
+        continue
+      }
+      if resp.StatusCode == http.StatusOK {
+        fuelerUp <- true
+        return
+      }
+      time.Sleep(2 * time.Second)
     }
   }()
   c := time.Tick(2 * time.Second)
   fmt.Print(INDENT)
+  containersUp := 0
   for {
     select {
       case _ = <-c:
         fmt.Print(".")
-      case _ = <-done:
-        fmt.Print("\n")
-        return
+      case _ = <-fuelerUp:
+        containersUp += 1
+      case _ = <-engineUp:
+        containersUp += 1
+    }
+    if containersUp == 2 {
+      fmt.Print("\n")
+      return
     }
   }
 }
 
 func copySource(name string, ip string) error {
   err := exec.Command(
-    "git","clone", "git@github.com:hotrodup/engine", name).Run()
+    "git","clone", "https://github.com/hotrodup/engine", name).Run()
   if err != nil {
     return err
   }
@@ -236,7 +257,7 @@ func create(name string) {
   fmt.Println(ARROW, "Starting containers")
   waitForContainers(ip)
 
-  d := <- done
+  d := <-done
   if !d {
     fmt.Println(INDENT, color.RedString("Hot Rod failed to create the source directory"))
     fmt.Println(INDENT, color.RedString("Check folder permissions"))
