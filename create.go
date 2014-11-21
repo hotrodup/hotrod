@@ -51,15 +51,16 @@ func checkAuth() error {
   return nil
 }
 
-func checkProject() error {
+func checkProject() (string, error) {
   out, err := exec.Command("gcloud", "config", "list", "project").CombinedOutput()
   if err != nil {
     log.Fatal(err)
   }
   if strings.Contains(string(out[:]), "(unset)") {
-    return errors.New("Project unset")
+    return "", errors.New("Project unset")
   }
-  return nil
+  project := strings.Trim(strings.Split(string(out[:]), "=")[1], " \n")
+  return project, nil
 }
 
 func execCustom(name string, arg ...string) (string, error) {
@@ -97,9 +98,6 @@ func findIP(input string) string {
 
 func createInstance(name string) (string, error) {
   err := ioutil.WriteFile("hotrod-containers.yaml", []byte(containers), 0777)
-  if err != nil {
-    return "", err
-  }
   out, err := execCustom(
     "gcloud", "compute", "instances", "create", "hotrod-" + name,
     "--image", "container-vm-v20140929",
@@ -201,7 +199,7 @@ func create(name string) {
     fmt.Println(INDENT, color.RedString("Run `gcloud auth login`"))
     return
   }
-  err = checkProject()
+  project, err := checkProject()
   if err != nil {
     fmt.Println(INDENT, color.RedString("Hot Rod requires an active `gcloud` project"))
     fmt.Println(INDENT, color.RedString("Create a project at"), "https://console.developers.google.com/project")
@@ -213,7 +211,8 @@ func create(name string) {
   ip, err := createInstance(name)
   if err != nil {
     fmt.Println(INDENT, color.RedString("Hot Rod failed to create an instance"))
-    fmt.Println(INDENT, color.RedString("Please try again later"))
+    fmt.Println(INDENT, color.RedString("Please enable billing and turn on the Compute API"))
+    fmt.Println(INDENT, color.RedString("at"), fmt.Sprintf("https://console.developers.google.com/project/%s/apiui/api", project))
     return
   }
 
