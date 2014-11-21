@@ -7,7 +7,6 @@ import (
   "io"
   "mime/multipart"
   "net/http"
-  "fmt"
   "gopkg.in/fsnotify.v1"
   fp "path/filepath"
 )
@@ -138,8 +137,13 @@ func start_up(baseURL string) {
   }()
 
   cwd, _ := os.Getwd()
+  err = fp.Walk(cwd, func(path string, info os.FileInfo, _ error) error {
+      if info.IsDir() {
+        watcher.Add(path)
+      }
+      return nil
+    })
   err = watcher.Add(cwd)
-  err = watcher.Add(fp.Join(cwd, "static"))
   if err != nil {
     log.Fatal(err)
   }
