@@ -4,10 +4,11 @@ import (
   "fmt"
   "os"
   "gopkg.in/alecthomas/kingpin.v1"
+  "github.com/fatih/color"
 )
 
 var (
-  app = kingpin.New("hotrod", "Turbocharge your Node.js development cycle")
+  app = kingpin.New(color.YellowString("hotrod"), color.YellowString("Turbocharge your Node.js development cycle"))
   
   create     = app.Command("create", "Create a new Hot Rod app.")
   createName = create.Arg("name", "The name of your app.").Required().String()
