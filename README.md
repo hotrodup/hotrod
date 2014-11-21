@@ -17,24 +17,24 @@ Hot Rod is a CLI that provisions a remote development server on Google Cloud and
 
 ## Installation
 
-Download the correct binary:
+1. Download the correct binary:
 
-|  | Linux | OSX | Windows |
-|:------:|----------------------------------------------------------------------------------------------------------------------------|-----|---------|
-| 32-bit | [hotrod-linux-386.tar.gz](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-linux-386.tar.gz) | [hotrod-darwin-386.zip](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-darwin-386.zip) | [hotrod-windows-386.zip](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-windows-386.zip) |
-| 64-bit | [hotrod-linux-amd64.tar.gz](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-linux-amd64.tar.gz ) | [hotrod-darwin-amd64.zip](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-darwin-amd64.zip) | [hotrod-windows-amd64.zip](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-windows-amd64.zip) |
+  |  | Linux | OSX | Windows |
+  |:------:|----------------------------------------------------------------------------------------------------------------------------|-----|---------|
+  | 32-bit | [hotrod-linux-386.tar.gz](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-linux-386.tar.gz) | [hotrod-darwin-386.zip](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-darwin-386.zip) | [hotrod-windows-386.zip](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-windows-386.zip) |
+  | 64-bit | [hotrod-linux-amd64.tar.gz](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-linux-amd64.tar.gz ) | [hotrod-darwin-amd64.zip](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-darwin-amd64.zip) | [hotrod-windows-amd64.zip](http://gobuild3.qiniudn.com/github.com/hotrodup/hotrod/branch-v-master/hotrod-windows-amd64.zip) |
 
-1. Unzip the package
+2. Unzip the package
   ```sh
   $ unzip hotrod-darwin-amd64.zip
   ```
 
-2. Move the binary to your `bin`
+3. Move the binary to your `bin`
   ```sh
   $ sudo mv hotrod /usr/local/bin
   ```
 
-3. Verify that Hot Rod is correctly installed
+4. Verify that Hot Rod is correctly installed
   ```sh
   $ hotrod
   ```
