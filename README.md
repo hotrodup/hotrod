@@ -10,6 +10,11 @@ Hot Rod is a CLI that provisions a remote development server on Google Cloud and
 
 [http://hotrodup.com](http://hotrodup.com)
 
+## Dependencies
+
+- [Google Cloud SDK](https://cloud.google.com/sdk/)
+- [Git](http://git-scm.com/)
+
 ## Installation
 
 Download the correct binary:
@@ -24,12 +29,12 @@ Download the correct binary:
   $ unzip hotrod-darwin-amd64.zip
   ```
 
-2. Move the binary to your bin
+2. Move the binary to your `bin`
   ```sh
   $ sudo mv hotrod /usr/local/bin
   ```
 
-3. Verify Hot Rod is installed
+3. Verify that Hot Rod is correctly installed
   ```sh
   $ hotrod
   ```
