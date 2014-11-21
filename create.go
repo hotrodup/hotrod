@@ -250,7 +250,7 @@ func create(name string) {
 const containers = `
 version: v1beta2
 containers:
-  - name: nodemon
+  - name: engine
     image: hotrod/engine
     ports:
       - name: http
@@ -262,7 +262,7 @@ containers:
     env:
       - name: PORT
         value: 8080
-  - name: src-store
+  - name: fueler
     image: hotrod/fueler
     ports:
       - name: upload
