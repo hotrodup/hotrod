@@ -9,10 +9,10 @@ import (
 var (
   app = kingpin.New("hotrod", "Turbocharge your Node.js development cycle")
   
-  create     = app.Command("create", "Create a new HotRod app.")
+  create     = app.Command("create", "Create a new Hot Rod app.")
   createName = create.Arg("name", "The name of your app.").Required().String()
 
-  up = app.Command("up", "Beam up the source to your HotRod app.")
+  up = app.Command("up", "Beam up the source to your Hot Rod app.")
 
 )
 
@@ -21,7 +21,7 @@ func main() {
 
   switch kingpin.MustParse(app.Parse(os.Args[1:])) {
     case create.FullCommand():
-      fmt.Printf("Creating HotRod app %s\n", *createName)
+      fmt.Printf("Creating Hot Rod app %s\n", *createName)
     case up.FullCommand():
       _, err := os.Stat("static")
       if err != nil {
