@@ -1,36 +1,38 @@
 package main
 
 import (
-  "fmt"
   "os"
+  "fmt"
   "gopkg.in/alecthomas/kingpin.v1"
   "github.com/fatih/color"
+  "github.com/kyokomi/emoji"
+)
+
+const (
+  VERSION = "0.0.1"
 )
 
 var (
-  app = kingpin.New(color.YellowString("hotrod"), color.YellowString("Turbocharge your Node.js development cycle"))
+
+  CHECKERED_FLAG = emoji.Sprintf(":checkered_flag:")
+  RED_CAR = emoji.Sprintf(":red_car:")
+
+  app = kingpin.New(color.YellowString("hotrod"), CHECKERED_FLAG + color.YellowString(" Turbocharge your Node.js development cycle"))
   
-  create     = app.Command("create", "Create a new Hot Rod app.")
-  createName = create.Arg("name", "The name of your app.").Required().String()
+  createCmd  = app.Command("create", "Create a new Hot Rod app.")
+  createName = createCmd.Arg("name", "The name of your app.").Required().String()
 
-  up = app.Command("up", "Beam up the source to your Hot Rod app.")
-
+  upCmd = app.Command("up", "Beam up the source to your Hot Rod app.")
 )
 
 func main() {
-  kingpin.Version("0.0.1")
-
   switch kingpin.MustParse(app.Parse(os.Args[1:])) {
-    case create.FullCommand():
-      fmt.Printf("Creating Hot Rod app %s\n", *createName)
-    case up.FullCommand():
-      _, err := os.Stat("static")
-      if err != nil {
-        fmt.Printf("This command must be run inside your app directory\n")
-        return
-      }
-      start_up("http://107.178.216.59:8888")
+    case createCmd.FullCommand():
+      create(*createName)
+    case upCmd.FullCommand():
+      up()
     default:
+      fmt.Printf("%s (v %s)\n\n", color.YellowString("Hot Rod"), VERSION)
       app.Usage(os.Stderr)
   }
 }

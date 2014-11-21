@@ -4,11 +4,16 @@ import (
   "log"
   "os"
   "bytes"
+  "fmt"
   "io"
   "mime/multipart"
   "net/http"
   "gopkg.in/fsnotify.v1"
   fp "path/filepath"
+  "github.com/skratchdot/open-golang/open"
+  "github.com/fatih/color"
+  "gopkg.in/yaml.v2"
+  "io/ioutil"
 )
 
 func post(path string, add, isFile bool, baseURL string) {
@@ -104,7 +109,54 @@ func handle(event fsnotify.Event, watcher *fsnotify.Watcher, baseURL string) {
   }
 }
 
-func start_up(baseURL string) {
+func checkDir() error {
+  _, err := os.Stat("static")
+  if err != nil {
+    fmt.Printf("This command must be run inside your app directory\n")
+    return err
+  }
+  return nil
+}
+
+func loadConfig() (string, string, error) {
+  type CONFIG struct {
+    NAME string
+    IP string
+  }
+
+  c := CONFIG{}
+
+  data, err := ioutil.ReadFile(".hotrod.yml")
+  if err != nil {
+    return "", "", err
+  }
+  err = yaml.Unmarshal(data, &c)
+  if err != nil {
+    return "", "", err
+  }
+
+  return c.NAME, c.IP, nil
+}
+
+func up() {
+
+  _, ip, err := loadConfig()
+  if err != nil {
+    fmt.Println(INDENT, color.RedString("This command must be run from inside your app's source directory"))
+    return
+  }
+  
+  previewURL := "http://" + ip
+  baseURL := previewURL + ":8888"
+
+  open.Run(previewURL)
+  fmt.Println(CHECKERED_FLAG, color.YellowString("Watching source files"))
+
+  err = checkDir()
+  if err != nil {
+    return
+  }
+
   watcher, err := fsnotify.NewWatcher()
   if err != nil {
     log.Fatal(err)
@@ -128,10 +180,10 @@ func start_up(baseURL string) {
   go func() {
     for {
       select {
-      case event := <-watcher.Events:
-        events <- event
-      case err := <-watcher.Errors:
-        log.Println("error:", err)
+        case event := <-watcher.Events:
+          events <- event
+        case err := <-watcher.Errors:
+          log.Println("error:", err)
       }
     }
   }()
