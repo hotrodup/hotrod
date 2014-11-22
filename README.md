@@ -2,7 +2,7 @@
 
 [![Gobuild Download](http://gobuild.io/badge/github.com/hotrodup/hotrod/downloads.svg)](http://gobuild.io/github.com/hotrodup/hotrod)
 
-<img align="right" height="250" src="http://i.imgur.com/xWFdv2b.png" alt="Hot Rod">
+<img align="right" height="250" src="http://i.imgur.com/2gYTTc8.png" alt="Hot Rod">
 
 > :checkered_flag: Turbocharge your Node.js development cycle.
 
