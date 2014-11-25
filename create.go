@@ -128,6 +128,10 @@ func configureFirewall() error {
     "gcloud", "compute", "firewall-rules", "create", "allow-other",
     "--description", "Incoming src files allowed",
     "--allow", "tcp:8888")
+  _, _ = execCustom(
+    "gcloud", "compute", "firewall-rules", "create", "allow-ws",
+    "--description", "Incoming src files allowed",
+    "--allow", "tcp:8585")
   return nil
 }
 
@@ -160,6 +164,20 @@ func waitForContainers(ip string) {
       time.Sleep(2 * time.Second)
     }
   }()
+  burnoutUp := make(chan bool)
+  go func() {
+    for {
+      resp, err := http.Get("http://"+ip+":8585")
+      if err != nil {
+        continue
+      }
+      if resp.StatusCode == http.StatusOK {
+        burnoutUp <- true
+        return
+      }
+      time.Sleep(2 * time.Second)
+    }
+  }()
   c := time.Tick(2 * time.Second)
   fmt.Print(INDENT)
   containersUp := 0
@@ -171,8 +189,10 @@ func waitForContainers(ip string) {
         containersUp += 1
       case _ = <-engineUp:
         containersUp += 1
+      case _ = <-burnoutUp:
+        containersUp += 1
     }
-    if containersUp == 2 {
+    if containersUp == 3 {
       fmt.Print("\n")
       return
     }
@@ -262,10 +282,10 @@ func create(name string) {
     return
   }
 
-  fmt.Println(ARROW, "Spinning up an instance")
+  fmt.Println(ARROW, "Spinning up a new instance")
   ip, err := createInstance(name)
   if err != nil {
-    fmt.Println(INDENT, color.RedString("Hot Rod failed to create an instance"))
+    fmt.Println(INDENT, color.RedString("Hot Rod failed to create a new instance"))
     fmt.Println(INDENT, color.RedString("Please enable billing and turn on the Compute API"))
     fmt.Println(INDENT, color.RedString("at"), fmt.Sprintf("https://console.developers.google.com/project/%s/apiui/api", project))
     return
@@ -329,6 +349,15 @@ containers:
       - name: upload
         hostPort: 8888
         containerPort: 8888
+    volumeMounts:
+      - name: app
+        mountPath: /app
+  - name: burnout
+    image: hotrod/burnout
+    ports:
+      - name: ping
+        hostPort: 8585
+        containerPort: 8585
     volumeMounts:
       - name: app
         mountPath: /app
