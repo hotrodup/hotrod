@@ -7,16 +7,23 @@ import (
   "log"
   "strings"
   "github.com/fatih/color"
+  "encoding/json"
   "errors"
   "time"
   "regexp"
   "net/http"
+  "net/url"
   "io/ioutil"
+  fp "path/filepath"
 )
 
 const (
   INDENT = "   "
   ARROW = "-> "
+
+  SCAFFOLD_REPO = "https://github.com/hotrodup/engine"
+  CONFIG_FILE = ".hotrod.yml"
+  GRANDSTAND_URL = "http://htrd.io"
 )
 
 func checkUnique(name string) error {
@@ -172,9 +179,36 @@ func waitForContainers(ip string) {
   }
 }
 
-func copySource(name string, ip string) error {
+type App struct {
+  IP  string
+  Name string
+  Runtime string
+  Slug string
+  Date    time.Time
+}
+
+func getURL(ip, name string) (string, error) {
+  resp, err := http.PostForm(GRANDSTAND_URL + "/create",
+    url.Values{"ip": {ip}, "name": {name}, "runtime": {"node"}})
+    if err != nil {
+      return "", err
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+      return "", err
+    }
+    var app App
+    err = json.Unmarshal(body, &app)
+    if err != nil {
+      return "", err
+    }
+    return GRANDSTAND_URL + "/" + app.Slug, nil
+}
+
+func copySource(name, ip, url string) error {
   err := exec.Command(
-    "git","clone", "https://github.com/hotrodup/engine", name).Run()
+    "git","clone", SCAFFOLD_REPO, name).Run()
   if err != nil {
     return err
   }
@@ -189,7 +223,7 @@ func copySource(name string, ip string) error {
     return err
   }
 
-  err = ioutil.WriteFile(name + "/.hotrod.yml", []byte(fmt.Sprintf(hotrodConfig, name, ip)), 0777)
+  err = ioutil.WriteFile(fp.Join(name, CONFIG_FILE), []byte(fmt.Sprintf(hotrodConfig, name, ip, url)), 0777)
   if err != nil {
     return err
   }
@@ -237,9 +271,14 @@ func create(name string) {
     return
   }
 
+  url, err := getURL(ip, name)
+  if err != nil {
+    fmt.Println(INDENT, color.RedString("Failed to create a preview URL at"), "http://htrd.io")
+  }
+
   done := make(chan bool)
   go func() {
-    err := copySource(name, ip)
+    err := copySource(name, ip, url)
     if err != nil {
       done <- false
     }
@@ -264,6 +303,7 @@ func create(name string) {
   }
 
   fmt.Println(ARROW, "Done")
+  fmt.Println(ARROW, "Preview app at", color.GreenString(url))
   fmt.Println(RED_CAR, color.YellowString("Now `cd "+name+"` and run `hotrod up`"))
 
 }
@@ -299,4 +339,5 @@ volumes:
 const hotrodConfig = `
 name: %s
 ip: %s
+url: %s
 `

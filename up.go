@@ -118,39 +118,41 @@ func checkDir() error {
   return nil
 }
 
-func loadConfig() (string, string, error) {
+func loadConfig() (string, string, string, error) {
   type CONFIG struct {
     NAME string
+    URL string
     IP string
   }
 
   c := CONFIG{}
 
-  data, err := ioutil.ReadFile(".hotrod.yml")
+  data, err := ioutil.ReadFile(CONFIG_FILE)
   if err != nil {
-    return "", "", err
+    return "", "", "", err
   }
   err = yaml.Unmarshal(data, &c)
   if err != nil {
-    return "", "", err
+    return "", "", "", err
   }
 
-  return c.NAME, c.IP, nil
+  return c.NAME, c.URL, c.IP, nil
 }
 
 func up() {
 
-  _, ip, err := loadConfig()
+  _, url, ip, err := loadConfig()
   if err != nil {
     fmt.Println(INDENT, color.RedString("This command must be run from inside your app's source directory"))
     return
   }
   
-  previewURL := "http://" + ip
-  baseURL := previewURL + ":8888"
+  previewURL := url
+  baseURL := "http://" + ip + ":8888"
 
   open.Run(previewURL)
   fmt.Println(CHECKERED_FLAG, color.YellowString("Watching source files"))
+  fmt.Println(INDENT, "Preview at", color.GreenString(url))
 
   err = checkDir()
   if err != nil {
