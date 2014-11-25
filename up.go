@@ -157,7 +157,8 @@ func up() {
 
   open.Run(previewURL)
   fmt.Println(CHECKERED_FLAG, color.YellowString("Watching source files"))
-  fmt.Println(INDENT, "Preview at", color.GreenString(url))
+  fmt.Println(ARROW, "Preview at", color.GreenString(url))
+  fmt.Println(RED_CAR, color.YellowString("Now edit the source files in this folder and save to see live updates on the server."))
 
   err = checkDir()
   if err != nil {
