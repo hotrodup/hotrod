@@ -13,6 +13,7 @@ import (
   "github.com/skratchdot/open-golang/open"
   "github.com/fatih/color"
   "gopkg.in/yaml.v2"
+  "strings"
   "io/ioutil"
 )
 
@@ -72,6 +73,10 @@ func post(path string, add, isFile bool, baseURL string) {
 
 func handle(event fsnotify.Event, watcher *fsnotify.Watcher, baseURL string) {
   filepath := event.Name
+
+  if strings.HasPrefix(fp.Base(filepath), ".") {
+    return
+  }
 
   // event type
   var add bool
