@@ -6,9 +6,16 @@
 
 > :checkered_flag: Turbocharge your Node.js development cycle.
 
-Hot Rod is a CLI that provisions a remote development server on Google Cloud and beams up your source code to the server after every local file change.  The traditional development cycle (edit code, preview locally, commit changes, deploy app, and verify changes) is turbocharged.  With Hot Rod, just edit your source, hit refresh, and--that's it! Your code is running live on a remote server.
+Hot Rod is a CLI that provisions a remote development server on Google Cloud and beams up your source code to the server after every local file change.  The traditional development cycle (edit code, preview locally, commit changes, deploy app, refresh webpage, and verify changes) is turbocharged.  With Hot Rod, just edit your source, hit save, and--that's it! Your code is running live on a remote server.
 
 [http://hotrodup.com](http://hotrodup.com)
+
+## Key Features
+
+- **Blazing Fast**: Local changes to source appear online in under `100ms`.  The delay is impercetible on a fast connection.
+- **Auto-Refresh**: No need to hit refresh in your browser, Hot Rod automatically reloads your page after every file change.
+- **Short URL**: Every development server gets a short URL for easy sharing.
+- **Local Editors**: No need to use a clumsy web-based IDE.  Use the tools you love to edit source locally, and preview the changes remotely.
 
 ## Dependencies
 
